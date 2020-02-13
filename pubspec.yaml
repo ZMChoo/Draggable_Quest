@@ -24,6 +24,11 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^0.1.2
 
+  # ZM
+  route_observer_mixin: 1.0.0
+  provider: ^3.1.0+1
+  logger: ^0.8.3
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

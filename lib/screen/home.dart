@@ -1,4 +1,5 @@
 
+import 'package:draggable_project/routes.dart';
 import 'package:flutter/material.dart';
 
 class Home extends StatefulWidget {
@@ -24,7 +25,7 @@ class _HomeState extends State<Home> {
               ),
               InkWell(
                 onTap: (){
-                  Navigator.pushNamed(context, "draggableHome");
+                  Navigator.of(context).pushNamed('/draggableHome');
                 },
                 child: Container(
                   padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),

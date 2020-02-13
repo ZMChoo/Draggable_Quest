@@ -1,41 +1,33 @@
 import 'package:draggable_project/screen/draggableHome.dart';
+import 'package:draggable_project/screen/home.dart';
 import 'package:flutter/material.dart';
+import 'package:draggable_project/main.dart';
 
 class Routes {
-  static String draggableHome = "/draggableHome";
-
-
-  static Map<String, WidgetBuilder> routes = <String, WidgetBuilder>{
-    draggableHome: (context) => generateRoute(DraggableHome()),
-
-  };
-
-  static Widget generateRoute(Widget page) {
-    return page;
-  }
-
-  static Widget getRoute(BuildContext context, String route) {
-    return routes[route](context);
-  }
-
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
-    final Map<String, dynamic> args = settings.arguments;
-    // if (settings.name == ritualDetail) {
-    //   return MaterialPageRoute(
-    //     builder: (context) {
-    //       return generateRoute(RitualDetail(
-    //           ritualInfo: args["ritualInfo"],
-    //           onSlidingButtonPress: args["onSlidingButtonPress"]));
-    //     },
-    //   );
-    // } 
-    // else if (settings.name == myOrderSummary) {
-    //   return MaterialPageRoute(
-    //     builder: (context) {
-    //       return generateRoute(MyOrderSummary(args["order"]));
-    //     },
-    //   );
-    // }
-    return MaterialPageRoute(builder: routes[settings.name]);
+    final args = settings.arguments;
+
+    switch (settings.name) {
+      case '/':
+        return MaterialPageRoute(builder: (_) => Home());
+      case '/draggableHome':
+        return MaterialPageRoute(
+            builder: (_) => DraggableHome(
+                // data: args
+                ));
+      default:
+        return _errorRoute();
+    }
+  }
+
+  static Route<dynamic> _errorRoute() {
+    return MaterialPageRoute(builder: (_) {
+      return Scaffold(
+        appBar: AppBar(),
+        body: Center(
+          child: Text("Page not found"),
+        ),
+      );
+    });
   }
 }
