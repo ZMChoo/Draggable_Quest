@@ -36,6 +36,7 @@ class _DraggableHomeState extends State<DraggableHome> {
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             Container(
+              alignment: Alignment.center,
                 width: MediaQuery.of(context).size.width * 0.20,
                 decoration: BoxDecoration(
                     color: CustomColors.cyan,
@@ -51,7 +52,7 @@ class _DraggableHomeState extends State<DraggableHome> {
                             Fruits fruit = fruitsdata.data[index];
                             return Padding(
                               padding: const EdgeInsets.symmetric(vertical: 5),
-                              child: Text(fruit.name),
+                              child: Text(fruit.name, textAlign: TextAlign.center),
                             );
                           });
                     }
@@ -73,7 +74,10 @@ class _DraggableHomeState extends State<DraggableHome> {
                             Questions question = questiondata.data[index];
                             return Padding(
                               padding: const EdgeInsets.symmetric(vertical: 5),
-                              child: Text(question.title),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 5),
+                                child: Text(question.title,),
+                              ),
                             );
                           });
                     }
