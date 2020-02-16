@@ -32,15 +32,11 @@
         "color": "red"
     },
     {
-        "name": "apple",
-        "color": "red"
-    },
-    {
         "name": "watermelon",
         "color": "green"
     },
     {
-        "name": "papaya",
+        "name": "mango",
         "color": "orange"
     }
 ]

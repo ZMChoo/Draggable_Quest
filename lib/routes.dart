@@ -1,5 +1,6 @@
 import 'package:draggable_project/screen/draggableHome.dart';
 import 'package:draggable_project/screen/home.dart';
+import 'package:draggable_project/screen/score.dart';
 import 'package:flutter/material.dart';
 import 'package:draggable_project/main.dart';
 
@@ -14,6 +15,11 @@ class Routes {
         return MaterialPageRoute(
             builder: (_) => DraggableHome(
                 // data: args
+                ));
+      case '/score':
+        return MaterialPageRoute(
+            builder: (_) => ScorePage(
+                score: args,
                 ));
       default:
         return _errorRoute();

@@ -49,6 +49,7 @@ flutter:
   assets:
   - assets/fruits.json
   - assets/questions.json
+  - assets/img/
   #  - images/a_dot_burr.jpeg
   #  - images/a_dot_ham.jpeg
 
