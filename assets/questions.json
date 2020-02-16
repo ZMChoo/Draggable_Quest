@@ -3,18 +3,18 @@
         "questionId": "1",
         "title": "Which fruits is the favourite food for monkeys?",
         "instruction": "Drag the food to the monkey",
-        "answer": "banana"
+        "answer": ["banana"]
     },
     {
         "questionId": "2",
-        "title": "Drag those fruits are in orange color into the box below",
+        "title": "Drag all the red color fruits into the box",
         "instruction": "",
-        "answer": "orange"
+        "answer": ["apple","tomato"]
     },
     {
         "questionId": "3",
         "title": "Find fruits from the picture",
         "instruction": "Drag fruits into the box below",
-        "answer": "banana"
+        "answer": ["banana"]
     }
 ]

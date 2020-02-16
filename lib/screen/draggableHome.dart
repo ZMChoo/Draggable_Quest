@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:draggable_project/common/customColors.dart';
 import 'package:draggable_project/modal/fruits.dart';
 import 'package:draggable_project/modal/questions.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class DraggableHome extends StatefulWidget {
@@ -14,6 +15,7 @@ class _DraggableHomeState extends State<DraggableHome> {
   int questionIndex = 0;
   bool questionIsCorrect = false;
   List<String> answerList = [];
+  List<String> selectedFruits = [];
   bool onPause = false;
   bool showMsg = false;
   final correctMsg = "Congratulation!\nWell done";
@@ -35,6 +37,25 @@ class _DraggableHomeState extends State<DraggableHome> {
   void initState() {
     // TODO: implement initState
     super.initState();
+  }
+
+  List<Widget> buildSelectedFruits(List<String> selectedFruits) {
+    selectedFruits.map((f) {
+      Container(
+        width: 80,
+        height: 80,
+        child: Image.asset('assets/img/' + f + '.png'),
+      );
+    }).toList();
+  }
+
+  bool checkSelectedFruit(List<String> answer){
+    for(final f in selectedFruits){
+      if(!answer.contains(f)){
+        return false;
+      }
+    }
+    return true;
   }
 
   @override
@@ -127,51 +148,81 @@ class _DraggableHomeState extends State<DraggableHome> {
                               return Padding(
                                 padding: EdgeInsets.only(top: 10),
                                 child: Container(
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.5,
-                                  height:
-                                      MediaQuery.of(context).size.width * 0.5,
-                                  child:
-                                      // questionIndex == 0 && !questionIsCorrect
-                                      questionIndex <= 2 && !questionIsCorrect
-                                          ? Image.asset(
-                                              'assets/img/monkey_question.jpg')
-                                          : Image.asset(
-                                              'assets/img/monkey_success.png'),
-                                ),
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.5,
+                                    height:
+                                        MediaQuery.of(context).size.width * 0.5,
+                                    child:
+                                        questionIndex == 0
+                                            ? !questionIsCorrect
+                                        // questionIndex <= 2 && !questionIsCorrect
+                                            ? Image.asset(
+                                                'assets/img/monkey_question.jpg')
+                                            : Image.asset(
+                                                'assets/img/monkey_success.png')
+                                              : questionIndex == 1
+                                                  ? Container(
+                                                      width: MediaQuery.of(context)
+                                                              .size
+                                                              .width *
+                                                          0.35,
+                                                      height: MediaQuery.of(context)
+                                                              .size
+                                                              .width *
+                                                          0.35,
+                                                      decoration: BoxDecoration(
+                                                        border: Border.all(
+                                                            color: Colors.black),
+                                                      ),
+                                                      child: Row(
+                                                        children:
+                                                            selectedFruits.length > 0
+                                                                ? buildSelectedFruits(
+                                                                    selectedFruits)
+                                                                : <Widget>[
+                                                                    Container()
+                                                                  ],
+                                                      ),
+                                                    )
+                                                  : Container()
+                                    ),
                               );
                             },
                             onWillAccept: (data) {
-                              // print(data);
-                              if (!onPause) {
+                              if (!onPause && questionIndex == 0) {
                                 if (data == "banana") {
                                   return true;
-                                } else {
-                                  setState(() {
-                                    questionIsCorrect = false;
-                                    showMsg = true;
-                                  });
-                                  return false;
                                 }
-                              }
+                              } else if (!onPause && questionIndex == 1) {
+                                  if (!selectedFruits.contains(data)) {
+                                    selectedFruits.add(data);
+                                    return true;
+                                  }
+                                  // else{
+                                  //   return true;
+                                  // }
+                              } else if (!onPause && questionIndex == 2) {}
+                              setState(() {
+                                showMsg = true;
+                              });
                               return false;
                             },
                             onAccept: (data) {
                               // print(data);
-                              if (!onPause) {
+                              if (!onPause && questionIndex == 0) {
                                 if (data == "banana") {
                                   setState(() {
                                     questionIsCorrect = true;
-                                    showMsg = true;
                                     onPause = true;
                                   });
-                                } else {
-                                  setState(() {
-                                    questionIsCorrect = true;
-                                    showMsg = true;
-                                  });
                                 }
-                              }
+                              } 
+                              // else if (!onPause && questionIndex == 1) {
+                              //   if(selectedFruits.contains(element)){
+
+                              //   }
+                              // }
+                               else if (!onPause && questionIndex == 2) {}
                             },
                           ),
                           showMsg
@@ -187,20 +238,34 @@ class _DraggableHomeState extends State<DraggableHome> {
                                   ),
                                 )
                               : Container(),
-                          showMsg && questionIsCorrect
-                              ? InkWell(
+                          // showMsg && questionIsCorrect
+                          //     ? 
+                              InkWell(
                                   onTap: () {
                                     print(questionIndex);
-                                    print("next question");
-                                    questionIndex < 2
+                                    questionIndex == 0
                                         ? setState(() {
                                             onPause = false;
                                             questionIsCorrect = false;
                                             showMsg = false;
                                             questionIndex = questionIndex + 1;
                                           })
-                                        : Navigator.of(context)
-                                            .pushNamed('/score',arguments: "3");
+                                          :questionIndex == 1 ? 
+                                          questionIsCorrect ?
+                                          setState(() {
+                                            onPause = false;
+                                            questionIsCorrect = false;
+                                            showMsg = false;
+                                            questionIndex = questionIndex + 1;
+                                          })
+                                          :checkSelectedFruit(question.answer) ?
+                                          setS
+                                          
+
+                                          
+                                        : Navigator.of(context).pushNamed(
+                                            '/score',
+                                            arguments: "3");
                                     ;
                                   },
                                   child: Container(
@@ -210,7 +275,7 @@ class _DraggableHomeState extends State<DraggableHome> {
                                           color: Colors.blue,
                                           borderRadius: BorderRadius.all(
                                               Radius.circular(10))),
-                                      child: Text("Next")),
+                                      child: Text(selectedFruits.length > 0 ? "Submit" : "Next")),
                                 )
                               : Container()
                         ],

@@ -12,7 +12,7 @@ class Questions {
     String questionId;
     String title;
     String instruction;
-    String answer;
+    List<String> answer;
 
     Questions({
         this.questionId,
@@ -25,13 +25,13 @@ class Questions {
         questionId: json["questionId"],
         title: json["title"],
         instruction: json["instruction"],
-        answer: json["answer"],
+        answer: List<String>.from(json["answer"].map((x) => x)),
     );
 
     Map<String, dynamic> toJson() => {
         "questionId": questionId,
         "title": title,
         "instruction": instruction,
-        "answer": answer,
+        "answer": List<dynamic>.from(answer.map((x) => x)),
     };
 }
