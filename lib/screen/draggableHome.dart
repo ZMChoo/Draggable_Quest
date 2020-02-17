@@ -116,6 +116,18 @@ class _DraggableHomeState extends State<DraggableHome> {
                   );
                 }));
         break;
+
+      case 2:
+        return Container(
+          alignment: Alignment.topCenter,
+          width: MediaQuery.of(context).size.width * 0.35,
+          height: MediaQuery.of(context).size.width * 0.35,
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.black),
+          ),
+          child: Text("whats to do here")
+        );
+        break;
       default:
         if (questionIsCorrect) {
           return Image.asset('assets/img/monkey_question.jpg');
@@ -259,16 +271,6 @@ class _DraggableHomeState extends State<DraggableHome> {
                             },
                             onLeave: (data) {
                               print(data);
-                              // if(selectedFruits.contains('$data''answer')){
-                              //   selectedFruits.removeWhere((f)=> f == '$data''answer');
-                              //   print(selectedFruits.length);
-                              //   setState(() {
-                              //     selectedFruits;
-                              //   });
-                              // }
-                              // if(data.contains("answer")){
-
-                              // }
                             },
                           ),
                           showMsg
