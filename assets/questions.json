@@ -13,8 +13,8 @@
     },
     {
         "questionId": "3",
-        "title": "Find fruits from the picture",
-        "instruction": "Drag fruits into the box below",
-        "answer": ["banana"]
+        "title": "Drag the fruits into the correct boxes",
+        "instruction": "",
+        "answer": ["grapes","watermelon","mango"]
     }
 ]

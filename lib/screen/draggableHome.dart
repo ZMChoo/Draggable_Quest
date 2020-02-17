@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:draggable_project/common/customColors.dart';
 import 'package:draggable_project/modal/fruits.dart';
 import 'package:draggable_project/modal/questions.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class DraggableHome extends StatefulWidget {
@@ -19,8 +18,14 @@ class _DraggableHomeState extends State<DraggableHome> {
   bool onPause = false;
   bool showMsg = false;
   bool showButton = false;
+  bool showReset = false;
+  bool isDone = false;
   final correctMsg = "Congratulation!\nWell done";
   final wrongMsg = "Opss!\nThis is not the correct answer";
+
+  String box1 = "";
+  String box2 = "";
+  String box3 = "";
 
   Future<List<Fruits>> fetchFruits(BuildContext context) async {
     final jsonString =
@@ -40,20 +45,6 @@ class _DraggableHomeState extends State<DraggableHome> {
     super.initState();
   }
 
-  // List<Widget> buildSelectedFruits(List<String> selectedFruits) {
-  //   List<Widget> selectedFruitsList = [];
-
-  //   selectedFruits.forEach((f) {
-  //     selectedFruitsList.add(Container(
-  //       width: 50,
-  //       height: 50,
-  //       child: Image.asset('assets/img/' + f + '.png'),
-  //     ));
-  //   });
-
-  //   return selectedFruitsList;
-  // }
-
   bool checkSelectedFruit(List<String> answer) {
     for (final f in selectedFruits) {
       if (!answer.contains(f)) {
@@ -63,7 +54,76 @@ class _DraggableHomeState extends State<DraggableHome> {
     return true;
   }
 
-  Widget buildDraggableQuestion(int questionIndex) {
+  Widget _buildField(int query, String fruit, String title) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: <Widget>[
+          Container(
+              width: MediaQuery.of(context).size.width * 0.3,
+              child: Text(
+                title.toUpperCase(),
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                textAlign: TextAlign.left,
+              )),
+          DragTarget(
+            builder: (context, List<String> draggableData, rejectedData) {
+              return Container(
+                padding: EdgeInsets.symmetric(vertical: 0, horizontal: 0),
+                width: MediaQuery.of(context).size.width * 0.2,
+                height: MediaQuery.of(context).size.width * 0.2,
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.black),
+                ),
+                child: Draggable(
+                  data: fruit,
+                  onDraggableCanceled: (velocity, offset) {
+                    setState(() {
+                      query == 1
+                          ? box1 = ""
+                          : query == 2 ? box2 = "" : box3 = "";
+                    });
+                  },
+                  child: fruit == ""
+                      ? Container()
+                      : Container(
+                          width: 50,
+                          height: 50,
+                          child: Image.asset('assets/img/' + fruit + '.png'),
+                        ),
+                  feedback: fruit == ""
+                      ? Container()
+                      : Container(
+                          width: 80,
+                          height: 80,
+                          child: Image.asset('assets/img/' + fruit + '.png'),
+                        ),
+                  childWhenDragging: Container(),
+                ),
+              );
+            },
+            onWillAccept: (data) {
+              return true;
+            },
+            onAccept: (data) {
+              print(data);
+              if (!onPause) {
+                setState(() {
+                  query == 1
+                      ? box1 = data
+                      : query == 2 ? box2 = data : box3 = data;
+                });
+              }
+            },
+            onLeave: (data) {},
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buildDraggableQuestion(int questionIndex, List<String> answers) {
     switch (questionIndex) {
       case 0:
         if (questionIsCorrect) {
@@ -119,14 +179,14 @@ class _DraggableHomeState extends State<DraggableHome> {
 
       case 2:
         return Container(
-          alignment: Alignment.topCenter,
-          width: MediaQuery.of(context).size.width * 0.35,
-          height: MediaQuery.of(context).size.width * 0.35,
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.black),
-          ),
-          child: Text("whats to do here")
-        );
+            width: MediaQuery.of(context).size.width * 0.65,
+            child: Column(
+              children: <Widget>[
+                _buildField(1, box1, answers[0]),
+                _buildField(2, box2, answers[1]),
+                _buildField(3, box3, answers[2]),
+              ],
+            ));
         break;
       default:
         if (questionIsCorrect) {
@@ -135,6 +195,25 @@ class _DraggableHomeState extends State<DraggableHome> {
           return Image.asset('assets/img/monkey_success.png');
         }
     }
+  }
+
+  bool validateAnswer(List<String> answers) {
+    for (var i = 0; i < answers.length; i++) {
+      if (i == 0) {
+        if (answers[i] != box1) {
+          return false;
+        }
+      } else if (i == 1) {
+        if (answers[i] != box2) {
+          return false;
+        }
+      } else if (i == 2) {
+        if (answers[i] != box3) {
+          return false;
+        }
+      }
+    }
+    return true;
   }
 
   @override
@@ -171,9 +250,7 @@ class _DraggableHomeState extends State<DraggableHome> {
                                     const EdgeInsets.symmetric(vertical: 5),
                                 child: Draggable(
                                   data: fruit.name,
-                                  onDragCompleted: () {
-                                    print("accepted");
-                                  },
+                                  onDragCompleted: () {},
                                   child: Container(
                                     width: 50,
                                     height: 50,
@@ -202,6 +279,8 @@ class _DraggableHomeState extends State<DraggableHome> {
                 child: FutureBuilder(
                   future: fetchQuestions(context),
                   builder: (context, questiondata) {
+                    double width = MediaQuery.of(context).size.width;
+
                     if (questiondata.hasData) {
                       Questions question = questiondata.data[questionIndex];
                       return Column(
@@ -223,10 +302,15 @@ class _DraggableHomeState extends State<DraggableHome> {
                                 rejectedData) {
                               return Container(
                                 padding: EdgeInsets.symmetric(
-                                    vertical: 10, horizontal: 5),
-                                width: MediaQuery.of(context).size.width * 0.5,
-                                height: MediaQuery.of(context).size.width * 0.7,
-                                child: buildDraggableQuestion(questionIndex),
+                                    vertical: 5, horizontal: 5),
+                                width: questionIndex == 2
+                                    ? width * 0.7
+                                    : width * 0.5,
+                                height: questionIndex == 2
+                                    ? width * 0.75
+                                    : width * 0.7,
+                                child: buildDraggableQuestion(questionIndex,
+                                    questionIndex == 2 ? question.answer : []),
                               );
                             },
                             onWillAccept: (data) {
@@ -247,15 +331,14 @@ class _DraggableHomeState extends State<DraggableHome> {
                                 } else {
                                   selectedFruits.add(data);
                                 }
-                                setState(() {
-                                  selectedFruits;
-                                });
+                                // setState(() {
+                                //   selectedFruits;
+                                // });
                               } else if (!onPause && questionIndex == 2) {}
 
                               return false;
                             },
                             onAccept: (data) {
-                              // print(data);
                               if (!onPause && questionIndex == 0) {
                                 if (question.answer.contains(data)) {
                                   setState(() {
@@ -265,22 +348,50 @@ class _DraggableHomeState extends State<DraggableHome> {
                                     showButton = true;
                                   });
                                 }
-                              } else if (!onPause && questionIndex == 1) {
-                                // setState(() {});
-                              } else if (!onPause && questionIndex == 2) {}
+                              }
                             },
                             onLeave: (data) {
-                              print(data);
+                              print("1");
                             },
                           ),
+                          SizedBox(
+                            height: 15,
+                          ),
+                          showReset
+                              ? InkWell(
+                                  onTap: () {
+                                    setState(() {
+                                      onPause = false;
+                                      box1 = "";
+                                      box2 = "";
+                                      box3 = "";
+                                      showMsg = false;
+                                      showButton = true;
+                                      showReset = false;
+                                    });
+                                  },
+                                  child: Container(
+                                    padding: EdgeInsets.symmetric(
+                                      vertical: 0,
+                                    ),
+                                    child: Text(
+                                      "Reset",
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                                )
+                              : Container(),
                           showMsg
                               ? Padding(
-                                  padding: EdgeInsets.only(top: 30, bottom: 30),
+                                  padding: EdgeInsets.only(top: 20, bottom: 10),
                                   child: Text(
                                     questionIsCorrect ? correctMsg : wrongMsg,
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
-                                        fontSize: 22,
+                                        fontSize: 20,
                                         color: CustomColors.veryOrange,
                                         fontWeight: FontWeight.bold),
                                   ),
@@ -290,16 +401,10 @@ class _DraggableHomeState extends State<DraggableHome> {
                               ? InkWell(
                                   onTap: () {
                                     print(questionIndex);
-                                    questionIndex == 0
-                                        ? setState(() {
-                                            onPause = false;
-                                            questionIsCorrect = false;
-                                            showMsg = false;
-                                            showButton = true;
-                                            questionIndex = questionIndex + 1;
-                                          })
-                                        : questionIndex == 1 &&
-                                                questionIsCorrect
+                                    isDone
+                                        ? Navigator.of(context)
+                                            .pushNamed('/score')
+                                        : questionIndex == 0
                                             ? setState(() {
                                                 onPause = false;
                                                 questionIsCorrect = false;
@@ -309,36 +414,58 @@ class _DraggableHomeState extends State<DraggableHome> {
                                                     questionIndex + 1;
                                               })
                                             : questionIndex == 1 &&
-                                                    !questionIsCorrect
-                                                ? selectedFruits.forEach((f) {
-                                                    if (!question.answer
-                                                        .contains(f)) {
-                                                      setState(() {
-                                                        showMsg = true;
-                                                      });
-                                                    } else {
-                                                      setState(() {
-                                                        onPause = true;
-                                                        questionIsCorrect =
-                                                            true;
-                                                        showButton = true;
-                                                        showMsg = true;
-                                                      });
-                                                    }
+                                                    questionIsCorrect
+                                                ? setState(() {
+                                                    onPause = false;
+                                                    questionIsCorrect = false;
+                                                    showMsg = false;
+                                                    showButton = true;
+                                                    selectedFruits = [];
+                                                    questionIndex =
+                                                        questionIndex + 1;
                                                   })
-                                                // :questionIndex == 1 ?
-                                                // questionIsCorrect ?
-                                                // setState(() {
-                                                //   onPause = false;
-                                                //   questionIsCorrect = false;
-                                                //   showMsg = false;
-                                                //   questionIndex = questionIndex + 1;
-                                                // })
-                                                // :checkSelectedFruit(question.answer) ?
-
-                                                : Navigator.of(context)
-                                                    .pushNamed('/score',
-                                                        arguments: "3");
+                                                : questionIndex == 1 &&
+                                                        !questionIsCorrect
+                                                    ? selectedFruits.length ==
+                                                            question
+                                                                .answer.length
+                                                        ? checkSelectedFruit(
+                                                                question.answer)
+                                                            ? setState(() {
+                                                                onPause = true;
+                                                                questionIsCorrect =
+                                                                    true;
+                                                                showButton =
+                                                                    true;
+                                                                showMsg = true;
+                                                              })
+                                                            : setState(() {
+                                                                showMsg = true;
+                                                              })
+                                                        : setState(() {
+                                                            showMsg = true;
+                                                          })
+                                                    : questionIndex == 2
+                                                        ? box1 != "" &&
+                                                                box2 != "" &&
+                                                                box3 != ""
+                                                            ? validateAnswer(
+                                                                        question
+                                                                            .answer) ==
+                                                                    true
+                                                                ? setQuestionDone()
+                                                                : setState(() {
+                                                                    onPause =
+                                                                        true;
+                                                                    showReset =
+                                                                        true;
+                                                                    showMsg =
+                                                                        true;
+                                                                    showButton =
+                                                                        false;
+                                                                  })
+                                                            : null
+                                                        : null;
                                   },
                                   child: Container(
                                       padding: EdgeInsets.symmetric(
@@ -366,5 +493,15 @@ class _DraggableHomeState extends State<DraggableHome> {
         ),
       ),
     );
+  }
+
+  void setQuestionDone() {
+    setState(() {
+      questionIsCorrect = true;
+      showMsg = true;
+      showButton = true;
+      onPause = true;
+      isDone = true;
+    });
   }
 }

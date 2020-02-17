@@ -19,7 +19,7 @@ class Routes {
       case '/score':
         return MaterialPageRoute(
             builder: (_) => ScorePage(
-                score: args,
+                // score: args,
                 ));
       default:
         return _errorRoute();
